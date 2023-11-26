@@ -1,0 +1,1 @@
+int processCommand(int command);
