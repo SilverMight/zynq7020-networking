@@ -53,8 +53,6 @@
 void print_app_header();
 int start_application();
 int transfer_data();
-void tcp_fasttmr(void);
-void tcp_slowtmr(void);
 
 /* missing declaration in lwIP */
 void lwip_init();
@@ -64,8 +62,6 @@ extern volatile int dhcp_timoutcntr;
 err_t dhcp_start(struct netif *netif);
 #endif
 
-extern volatile int TcpFastTmrFlag;
-extern volatile int TcpSlowTmrFlag;
 static struct netif server_netif;
 struct netif *echo_netif;
 
@@ -101,6 +97,7 @@ int IicPhyReset(void);
 
 int main()
 {
+	xil_printf("Stupid dumb test");
 	struct ip_addr ipaddr, netmask, gw;
 
 	/* the mac address of the board. this should be unique per board */
@@ -130,7 +127,7 @@ int main()
 	/* initliaze IP addresses to be used */
 	IP4_ADDR(&ipaddr,  192, 168,   1, 10);
 	IP4_ADDR(&netmask, 255, 255, 255,  0);
-	IP4_ADDR(&gw,      192, 168,   1,  1);
+	IP4_ADDR(&gw,      192, 168,   1,  254);
 #endif	
 	print_app_header();
 
@@ -184,14 +181,6 @@ int main()
 
 	/* receive and process packets */
 	while (1) {
-		if (TcpFastTmrFlag) {
-			tcp_fasttmr();
-			TcpFastTmrFlag = 0;
-		}
-		if (TcpSlowTmrFlag) {
-			tcp_slowtmr();
-			TcpSlowTmrFlag = 0;
-		}
 		xemacif_input(echo_netif);
 		transfer_data();
 	}

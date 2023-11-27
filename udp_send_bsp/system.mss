@@ -6,8 +6,8 @@ BEGIN OS
  PARAMETER OS_NAME = standalone
  PARAMETER OS_VER = 6.5
  PARAMETER PROC_INSTANCE = ps7_cortexa9_0
- PARAMETER stdin = ps7_uart_0
- PARAMETER stdout = ps7_uart_0
+ PARAMETER stdin = ps7_uart_1
+ PARAMETER stdout = ps7_uart_1
 END
 
 
@@ -251,8 +251,6 @@ BEGIN LIBRARY
  PARAMETER LIBRARY_NAME = lwip141
  PARAMETER LIBRARY_VER = 2.0
  PARAMETER PROC_INSTANCE = ps7_cortexa9_0
- PARAMETER dhcp_does_arp_check = true
- PARAMETER lwip_dhcp = true
 END
 
 
