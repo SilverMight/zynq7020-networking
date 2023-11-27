@@ -3,5 +3,5 @@ the_ROM_image:
 {
 	[bootloader]/home/silvermight/zturn_real/zturn_real.sdk/zynq_fsbl/Debug/zynq_fsbl.elf
 	/home/silvermight/zturn_real/zturn_real.sdk/design_1_wrapper_hw_platform_0/design_1_wrapper.bit
-	/home/silvermight/zturn_real/zturn_real.sdk/echo_server/Debug/echo_server.elf
+	/home/silvermight/zturn_git/echo_server/Debug/echo_server.elf
 }

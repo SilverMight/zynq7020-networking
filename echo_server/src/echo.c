@@ -47,8 +47,7 @@ int transfer_data() {
 
 void print_app_header()
 {
-	xil_printf("\n\r\n\r-----lwIP TCP echo server ------\n\r");
-	xil_printf("TCP packets sent to port 6001 will be echoed back\n\r");
+	xil_printf("\n\r\n\r-----lwIP command example ------\n\r");
 }
 
 err_t recv_callback(void *arg, struct tcp_pcb *tpcb,
@@ -64,24 +63,26 @@ err_t recv_callback(void *arg, struct tcp_pcb *tpcb,
 	/* indicate that the packet has been received */
 	tcp_recved(tpcb, p->len);
 
-	/* echo back the payload */
-	/* in this case, we assume that the payload is < TCP_SND_BUF */
+	/* get payload as an array of bytes (chars) */
 	char buffer[p->len];
-	if (tcp_sndbuf(tpcb) > p->len) {
-		// err = tcp_write(tpcb, p->payload, p->len, 1);
-		memcpy(buffer, p->payload, p->len);
+	memcpy(buffer, p->payload, p->len);
 
-		//memcpy(&command, buffer, sizeof(int));
-		tcp_write(tpcb, p->payload, p->len, 1);
-	} else
-		xil_printf("no space in tcp_sndbuf\n\r");
+	/* reinterpret as an integer
+	 * REQUIRES LITTLE ENDIAN, or htonl()
+	 */
+	int command;
+	memcpy(&command, buffer, sizeof(int));
 
-	xil_printf("Received %s\n", buffer);
-	int test;
-	memcpy(&test, buffer, sizeof(int));
-	xil_printf("Int %d\n", test);
+	//xil_printf("\nReceived (ASCII Representation)%s\n", buffer);
+	xil_printf("\n\nReceived integer: %d\n", command);
 
-	processCommand(test);
+	int reply = processCommand(command);
+	/* reserialize */
+
+	char newbuf[sizeof(int)];
+	memcpy(newbuf, &reply, sizeof(int));
+	err = tcp_write(tpcb, newbuf, sizeof(int), 1);
+
 	/* free the received pbuf */
 	pbuf_free(p);
 
