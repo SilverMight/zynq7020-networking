@@ -32,6 +32,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "lwip/err.h"
 #include "lwip/udp.h"
@@ -39,16 +40,17 @@
 #include "xil_printf.h"
 #endif
 
+
 int transfer_data() {
 	return 0;
 }
 
 void print_app_header()
 {
-	xil_printf("\n\r\n\r-----lwIP UDP echo server ------\n\r");
-	xil_printf("UDP packets sent to port 6001 will be echoed back\n\r");
+	xil_printf("\n\r\n\r-----lwIP UDP streaming server ------\n\r");
 }
 
+#if 0
 void recv_callback(void *arg, struct udp_pcb *pcb,
                                struct pbuf *p, struct ip_addr *addr, u16_t port)
 {
@@ -56,12 +58,10 @@ void recv_callback(void *arg, struct udp_pcb *pcb,
 	if (!p) {
 		return;
 	}
+	xil_printf("Sending data");
 
-
-	udp_sendto(pcb, p, addr, port);
-	/* free the received pbuf */
-	pbuf_free(p);
 }
+#endif
 
 
 int start_application()
@@ -78,15 +78,34 @@ int start_application()
 	}
 
 	/* bind to specified @port */
+
+	ip_addr_t dest;
+	IP4_ADDR(&dest, 192, 168, 1, 75);
 	err = udp_bind(pcb, IP_ADDR_ANY, port);
 	if (err != ERR_OK) {
 		xil_printf("Unable to bind to port %d: err = %d\n\r", port, err);
 		return -2;
 	}
 
-	udp_recv(pcb, recv_callback, NULL);
+	xil_printf("Sending packets...\n");
+	while(1) {
+		int i = 5;
+		struct pbuf *data = pbuf_alloc(PBUF_TRANSPORT, sizeof(int), PBUF_RAM);
+		if(data == NULL) {
+			xil_printf("Failed to allocate");
+			continue;
+		}
+		if(pbuf_take(data, &i, sizeof(int)) != ERR_OK) {
+			xil_printf("Error in pbuf_take\n");
+			break;
+		}
 
-	xil_printf("TCP echo server started @ port %d\n\r", port);
+		udp_sendto(pcb, data, &dest, port);
+		pbuf_free(data);
+		usleep(100000);
+	}
+
+	xil_printf("UDP streaming server started @ port %d\n\r", port);
 
 	return 0;
 }

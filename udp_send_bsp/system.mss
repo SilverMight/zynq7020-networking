@@ -251,6 +251,12 @@ BEGIN LIBRARY
  PARAMETER LIBRARY_NAME = lwip141
  PARAMETER LIBRARY_VER = 2.0
  PARAMETER PROC_INSTANCE = ps7_cortexa9_0
+ PARAMETER mem_size = 524288
+ PARAMETER memp_n_pbuf = 1024
+ PARAMETER n_rx_descriptors = 512
+ PARAMETER pbuf_pool_size = 16384
+ PARAMETER temac_use_jumbo_frames = true
+ PARAMETER udp_debug = true
 END
 
 
