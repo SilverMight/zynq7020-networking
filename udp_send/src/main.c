@@ -97,7 +97,6 @@ int IicPhyReset(void);
 
 int main()
 {
-	xil_printf("Stupid dumb test");
 	struct ip_addr ipaddr, netmask, gw;
 
 	/* the mac address of the board. this should be unique per board */
@@ -130,6 +129,8 @@ int main()
 	IP4_ADDR(&gw,      192, 168,   1,  254);
 #endif	
 	print_app_header();
+
+	// print test
 
 	lwip_init();
 

@@ -63,12 +63,40 @@ void recv_callback(void *arg, struct udp_pcb *pcb,
 }
 #endif
 
+void udp_echo_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, struct
+					ip_addr *addr, u16_t port)
+{
+	char buf[100];
+	snprintf(buf, 100, "%d,%d,%d,%d,%d\n", 1, 2, 4, 7, 13);
+
+	int buflen = strlen(buf);
+	struct pbuf *data = pbuf_alloc(PBUF_TRANSPORT, buflen, PBUF_RAM);
+	xil_printf("%s", buf);
+	if(data == NULL) {
+		xil_printf("Failed to allocate");
+		return;
+	}
+	if(pbuf_take(data, buf, buflen) != ERR_OK) {
+		xil_printf("Error in pbuf_take\n");
+		return;
+	}
+	pbuf_free(data);
+    if (p != NULL) {
+        /* send received packet back to sender */
+        udp_sendto(pcb, data, addr, port);
+        /* free the pbuf */
+        pbuf_free(data);
+        pbuf_free(p);
+    }
+}
+
+void static_send()
 
 int start_application()
 {
 	struct udp_pcb *pcb;
 	err_t err;
-	unsigned port = 35912;
+	unsigned port = 39000;
 
 	/* create new TCP PCB structure */
 	pcb = udp_new();
@@ -78,32 +106,23 @@ int start_application()
 	}
 
 	/* bind to specified @port */
-
-	ip_addr_t dest;
-	IP4_ADDR(&dest, 192, 168, 1, 75);
 	err = udp_bind(pcb, IP_ADDR_ANY, port);
-	if (err != ERR_OK) {
+	if (err != 0) {
 		xil_printf("Unable to bind to port %d: err = %d\n\r", port, err);
 		return -2;
 	}
 
-	xil_printf("Sending packets...\n");
-	while(1) {
-		int i = 5;
-		struct pbuf *data = pbuf_alloc(PBUF_TRANSPORT, sizeof(int), PBUF_RAM);
-		if(data == NULL) {
-			xil_printf("Failed to allocate");
-			continue;
-		}
-		if(pbuf_take(data, &i, sizeof(int)) != ERR_OK) {
-			xil_printf("Error in pbuf_take\n");
-			break;
-		}
-
-		udp_sendto(pcb, data, &dest, port);
-		pbuf_free(data);
-		usleep(100000);
+	/* Receive data */
+	udp_recv(pcb, udp_echo_recv, NULL);
+	/* bind to specified @port */
+	err = udp_bind(pcb, IP_ADDR_ANY, port);
+	if (err != 0) {
+		xil_printf("Unable to bind to port %d: err = %d\n\r", port, err);
+		return -2;
 	}
+
+	/* Receive data */
+	udp_recv(pcb, udp_echo_recv, NULL);
 
 	xil_printf("UDP streaming server started @ port %d\n\r", port);
 
