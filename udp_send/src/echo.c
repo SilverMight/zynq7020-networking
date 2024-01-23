@@ -66,31 +66,54 @@ void recv_callback(void *arg, struct udp_pcb *pcb,
 void udp_echo_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, struct
 					ip_addr *addr, u16_t port)
 {
-	char buf[100];
-	snprintf(buf, 100, "%d,%d,%d,%d,%d\n", 1, 2, 4, 7, 13);
-
-	int buflen = strlen(buf);
-	struct pbuf *data = pbuf_alloc(PBUF_TRANSPORT, buflen, PBUF_RAM);
-	xil_printf("%s", buf);
-	if(data == NULL) {
-		xil_printf("Failed to allocate");
-		return;
-	}
-	if(pbuf_take(data, buf, buflen) != ERR_OK) {
-		xil_printf("Error in pbuf_take\n");
-		return;
-	}
-	pbuf_free(data);
     if (p != NULL) {
         /* send received packet back to sender */
-        udp_sendto(pcb, data, addr, port);
+        udp_sendto(pcb, p, addr, port);
         /* free the pbuf */
-        pbuf_free(data);
         pbuf_free(p);
     }
 }
 
-void static_send()
+int static_send() {
+	struct udp_pcb *pcb;
+	err_t err;
+	struct pbuf *data;
+
+
+	pcb = udp_new();
+	if (!pcb) {
+		xil_printf("Error creating PCB. Out of Memory\n\r");
+		return -1;
+	}
+
+	ip_addr_t dest_ip;
+	IP4_ADDR(&dest_ip, 192, 168, 1, 75);
+
+	char buf[100];
+	snprintf(buf, 100, "%d,%d,%d,%d,%d\n", 1, 2, 4, 7, 13);
+
+	int buflen = strlen(buf);
+	data = pbuf_alloc(PBUF_TRANSPORT, buflen, PBUF_RAM);
+	xil_printf("%s", buf);
+
+	if(data == NULL) {
+		xil_printf("Failed to allocate");
+		return -1;
+	}
+	if(pbuf_take(data, buf, buflen) != ERR_OK) {
+		xil_printf("Error in pbuf_take\n");
+		return -1;
+	}
+
+	err = udp_sendto(pcb, data, &dest_ip, 39000);
+	if (err != ERR_OK) {
+		xil_printf("Failed to send!\n");
+	}
+
+	pbuf_free(data);
+	udp_remove(pcb);
+	return 0;
+}
 
 int start_application()
 {

@@ -44,6 +44,7 @@
 
 #include "lwip/tcp.h"
 #include "xil_cache.h"
+#include "sleep.h"
 
 #if LWIP_DHCP==1
 #include "lwip/dhcp.h"
@@ -52,6 +53,7 @@
 /* defined by each RAW mode application */
 void print_app_header();
 int start_application();
+int static_send();
 int transfer_data();
 
 /* missing declaration in lwIP */
@@ -183,7 +185,8 @@ int main()
 	/* receive and process packets */
 	while (1) {
 		xemacif_input(echo_netif);
-		transfer_data();
+		sleep(1);
+		static_send();
 	}
   
 	/* never reached */
