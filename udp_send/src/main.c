@@ -51,10 +51,6 @@
 #endif
 
 /* defined by each RAW mode application */
-void print_app_header();
-int start_application();
-int static_send();
-int transfer_data();
 
 /* missing declaration in lwIP */
 void lwip_init();
@@ -180,16 +176,22 @@ int main()
 	print_ip_settings(&ipaddr, &netmask, &gw);
 
 	/* start the application (web server, rxtest, txtest, etc..) */
-	start_application();
+    struct udp_pcb *pcb;
+	if(udp_send_init(pcb) != 0) {
+        return -1;
+    }
+
+
+	ip_addr_t dest_ip;
+	IP4_ADDR(&dest_ip, 192, 168, 1, 75);
 
 	/* receive and process packets */
 	while (1) {
 		xemacif_input(echo_netif);
-		sleep(1);
-		static_send();
 	}
   
 	/* never reached */
+    udp_remove(pcb);
 	cleanup_platform();
 
 	return 0;

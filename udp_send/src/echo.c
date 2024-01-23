@@ -74,44 +74,46 @@ void udp_echo_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, struct
     }
 }
 
-int static_send() {
-	struct udp_pcb *pcb;
-	err_t err;
-	struct pbuf *data;
-
-
-	pcb = udp_new();
+int udp_send_init(struct udp_pcb* pcb_out) {
+    *pcb_out = udp_new();
 	if (!pcb) {
 		xil_printf("Error creating PCB. Out of Memory\n\r");
 		return -1;
 	}
+    return 0;
+}
 
-	ip_addr_t dest_ip;
-	IP4_ADDR(&dest_ip, 192, 168, 1, 75);
-
+int static_send(struct udp_pcb * pcb, ip_addr_t * dest_ip, unsigned port) {
+	err_t err;
+	struct pbuf *data; // packet we send over the network
 	char buf[100];
-	snprintf(buf, 100, "%d,%d,%d,%d,%d\n", 1, 2, 4, 7, 13);
 
+
+    // Should extrapolate this into a data to string function
+    // (which we could call with data we fetched)
+	snprintf(buf, 100, "%d,%d,%d,%d,%d\n", 1, 2, 4, 7, 13); // who needs a CSV library anyway
 	int buflen = strlen(buf);
+
 	data = pbuf_alloc(PBUF_TRANSPORT, buflen, PBUF_RAM);
-	xil_printf("%s", buf);
+	//xil_printf("%s", buf);
 
 	if(data == NULL) {
-		xil_printf("Failed to allocate");
+		xil_printf("Failed to allocate, OOM");
 		return -1;
 	}
+
 	if(pbuf_take(data, buf, buflen) != ERR_OK) {
 		xil_printf("Error in pbuf_take\n");
 		return -1;
 	}
 
-	err = udp_sendto(pcb, data, &dest_ip, 39000);
+	err = udp_sendto(pcb, data, dest_ip, port);
 	if (err != ERR_OK) {
 		xil_printf("Failed to send!\n");
+        return -1;
 	}
 
 	pbuf_free(data);
-	udp_remove(pcb);
 	return 0;
 }
 
@@ -135,17 +137,9 @@ int start_application()
 		return -2;
 	}
 
-	/* Receive data */
-	udp_recv(pcb, udp_echo_recv, NULL);
-	/* bind to specified @port */
-	err = udp_bind(pcb, IP_ADDR_ANY, port);
-	if (err != 0) {
-		xil_printf("Unable to bind to port %d: err = %d\n\r", port, err);
-		return -2;
-	}
 
 	/* Receive data */
-	udp_recv(pcb, udp_echo_recv, NULL);
+	//udp_recv(pcb, udp_echo_recv, NULL);
 
 	xil_printf("UDP streaming server started @ port %d\n\r", port);
 
