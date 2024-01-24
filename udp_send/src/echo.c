@@ -74,9 +74,9 @@ void udp_echo_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, struct
     }
 }
 
-int udp_send_init(struct udp_pcb* pcb_out) {
+int udp_send_init(struct udp_pcb** pcb_out) {
     *pcb_out = udp_new();
-	if (!pcb) {
+	if (!*pcb_out) {
 		xil_printf("Error creating PCB. Out of Memory\n\r");
 		return -1;
 	}
@@ -91,11 +91,15 @@ int static_send(struct udp_pcb * pcb, ip_addr_t * dest_ip, unsigned port) {
 
     // Should extrapolate this into a data to string function
     // (which we could call with data we fetched)
-	snprintf(buf, 100, "%d,%d,%d,%d,%d\n", 1, 2, 4, 7, 13); // who needs a CSV library anyway
+	int fakedata[5];
+	for(int i = 0; i < sizeof(data); i++) {
+		fakedata[i] = rand() % 50;
+	}
+	snprintf(buf, 100, "%d,%d,%d,%d,%d\n", fakedata[0], fakedata[1], fakedata[2], fakedata[3], fakedata[4]); // who needs a CSV library anyway
 	int buflen = strlen(buf);
 
 	data = pbuf_alloc(PBUF_TRANSPORT, buflen, PBUF_RAM);
-	//xil_printf("%s", buf);
+	xil_printf("%s", buf);
 
 	if(data == NULL) {
 		xil_printf("Failed to allocate, OOM");
@@ -117,6 +121,7 @@ int static_send(struct udp_pcb * pcb, ip_addr_t * dest_ip, unsigned port) {
 	return 0;
 }
 
+// Currently useless - will replace with TCP
 int start_application()
 {
 	struct udp_pcb *pcb;

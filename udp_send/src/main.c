@@ -45,6 +45,7 @@
 #include "lwip/tcp.h"
 #include "xil_cache.h"
 #include "sleep.h"
+#include "echo.h"
 
 #if LWIP_DHCP==1
 #include "lwip/dhcp.h"
@@ -177,7 +178,7 @@ int main()
 
 	/* start the application (web server, rxtest, txtest, etc..) */
     struct udp_pcb *pcb;
-	if(udp_send_init(pcb) != 0) {
+	if(udp_send_init(&pcb) != 0) {
         return -1;
     }
 
@@ -188,6 +189,8 @@ int main()
 	/* receive and process packets */
 	while (1) {
 		xemacif_input(echo_netif);
+		static_send(pcb, &dest_ip, 39000);
+		usleep(1000);
 	}
   
 	/* never reached */
