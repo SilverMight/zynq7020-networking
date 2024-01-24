@@ -34,6 +34,9 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "echo.h"
+#include "data.h"
+
 #include "lwip/err.h"
 #include "lwip/udp.h"
 #if defined (__arm__) || defined (__aarch64__)
@@ -91,10 +94,8 @@ int static_send(struct udp_pcb * pcb, ip_addr_t * dest_ip, unsigned port) {
 
     // Should extrapolate this into a data to string function
     // (which we could call with data we fetched)
-	int fakedata[5];
-	for(int i = 0; i < sizeof(data); i++) {
-		fakedata[i] = rand() % 50;
-	}
+	int * fakedata = get_n_random_numbers(5, 500);
+
 	snprintf(buf, 100, "%d,%d,%d,%d,%d\n", fakedata[0], fakedata[1], fakedata[2], fakedata[3], fakedata[4]); // who needs a CSV library anyway
 	int buflen = strlen(buf);
 
@@ -117,6 +118,7 @@ int static_send(struct udp_pcb * pcb, ip_addr_t * dest_ip, unsigned port) {
         return -1;
 	}
 
+	free(fakedata);
 	pbuf_free(data);
 	return 0;
 }
