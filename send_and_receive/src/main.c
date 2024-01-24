@@ -46,6 +46,7 @@
 #include "xil_cache.h"
 #include "sleep.h"
 #include "udp.h"
+#include "tcp.h"
 
 #if LWIP_DHCP==1
 #include "lwip/dhcp.h"
@@ -127,9 +128,6 @@ int main()
 	IP4_ADDR(&netmask, 255, 255, 255,  0);
 	IP4_ADDR(&gw,      192, 168,   1,  254);
 #endif	
-	print_app_header();
-
-	// print test
 
 	lwip_init();
 
@@ -186,9 +184,12 @@ int main()
 	ip_addr_t dest_ip;
 	IP4_ADDR(&dest_ip, 192, 168, 1, 75);
 
+	// start receiving commands
+	start_application();
+
 	/* receive and process packets */
 	while (1) {
-
+		xemacif_input(echo_netif);
 		static_send(pcb, &dest_ip, 39000);
 		usleep(100);
 	}
