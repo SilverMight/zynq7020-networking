@@ -45,7 +45,7 @@
 #include "lwip/tcp.h"
 #include "xil_cache.h"
 #include "sleep.h"
-#include "echo.h"
+#include "udp.h"
 
 #if LWIP_DHCP==1
 #include "lwip/dhcp.h"
@@ -190,7 +190,7 @@ int main()
 	while (1) {
 		xemacif_input(echo_netif);
 		static_send(pcb, &dest_ip, 39000);
-		usleep(1000);
+		usleep(100);
 	}
   
 	/* never reached */
