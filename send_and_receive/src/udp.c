@@ -44,29 +44,6 @@
 #include "xil_printf.h"
 #endif
 
-
-int transfer_data() {
-	return 0;
-}
-
-void print_app_header()
-{
-	xil_printf("\n\r\n\r-----lwIP UDP streaming server ------\n\r");
-}
-
-#if 0
-void recv_callback(void *arg, struct udp_pcb *pcb,
-                               struct pbuf *p, struct ip_addr *addr, u16_t port)
-{
-	/* do not read the packet if we are not in ESTABLISHED state */
-	if (!p) {
-		return;
-	}
-	xil_printf("Sending data");
-
-}
-#endif
-
 void udp_echo_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, struct
 					ip_addr *addr, u16_t port)
 {
@@ -136,35 +113,5 @@ int static_send(struct udp_pcb * pcb, ip_addr_t * dest_ip, unsigned port) {
 
 	free(fakedata);
 	pbuf_free(data);
-	return 0;
-}
-
-// Currently useless - will replace with TCP
-int start_application()
-{
-	struct udp_pcb *pcb;
-	err_t err;
-	unsigned port = 39000;
-
-	/* create new TCP PCB structure */
-	pcb = udp_new();
-	if (!pcb) {
-		xil_printf("Error creating PCB. Out of Memory\n\r");
-		return -1;
-	}
-
-	/* bind to specified @port */
-	err = udp_bind(pcb, IP_ADDR_ANY, port);
-	if (err != 0) {
-		xil_printf("Unable to bind to port %d: err = %d\n\r", port, err);
-		return -2;
-	}
-
-
-	/* Receive data */
-	//udp_recv(pcb, udp_echo_recv, NULL);
-
-	xil_printf("UDP streaming server started @ port %d\n\r", port);
-
 	return 0;
 }
