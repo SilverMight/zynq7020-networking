@@ -64,8 +64,8 @@ int udp_send_init(struct udp_pcb** pcb_out) {
     return 0;
 }
 
-int static_send(struct udp_pcb * pcb, ip_addr_t * dest_ip, unsigned port) {
-	int numDataPoints = 5;
+int static_send(struct udp_pcb * pcb, ip_addr_t * dest_ip, unsigned port, unsigned number) {
+	const int numDataPoints = 2;
 
 	err_t err;
 	struct pbuf *data; // packet we send over the network
@@ -74,7 +74,7 @@ int static_send(struct udp_pcb * pcb, ip_addr_t * dest_ip, unsigned port) {
 
     // Should extrapolate this into a data to string function
     // (which we could call with data we fetched)
-	int * fakedata = get_n_random_numbers(numDataPoints, 10);
+	//int * fakedata = get_n_random_numbers(numDataPoints, 10);
 
 	/*
 	snprintf(buf, 100, "%d,%d,%d,%d,%d\n", fakedata[0], fakedata[1], fakedata[2], fakedata[3], fakedata[4]); // who needs a CSV library anyway
@@ -84,7 +84,8 @@ int static_send(struct udp_pcb * pcb, ip_addr_t * dest_ip, unsigned port) {
 	buf[0] = 0xAA; // sync word for telemetry viewer
 	size_t offset = 1;
 	for(int i = 0; i < numDataPoints; i++) {
-		memcpy(buf + offset, &fakedata[i], sizeof(int));
+		//memcpy(buf + offset, &fakedata[i], sizeof(int));
+		memcpy(buf + offset, &number, sizeof(int));
 		offset += sizeof(int);
 	}
 
@@ -111,7 +112,7 @@ int static_send(struct udp_pcb * pcb, ip_addr_t * dest_ip, unsigned port) {
         return -1;
 	}
 
-	free(fakedata);
+	//free(fakedata);
 	pbuf_free(data);
 	return 0;
 }

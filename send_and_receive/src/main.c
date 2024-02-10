@@ -182,15 +182,24 @@ int main()
 
 
 	ip_addr_t dest_ip;
-	IP4_ADDR(&dest_ip, 192, 168, 1, 75);
+	IP4_ADDR(&dest_ip, 192, 168, 1, 3);
 
 	// start receiving commands
 	start_application();
 
 	/* receive and process packets */
+	int countUp = 1;
+	int number = 0;
 	while (1) {
+		if(number == 0) countUp = 1;
+		if(number == 1000) countUp = 0;
 		xemacif_input(echo_netif);
-		static_send(pcb, &dest_ip, 39000);
+		static_send(pcb, &dest_ip, 39000, number);
+		if(countUp) {
+			number++;
+		} else {
+			number--;
+		}
 		usleep(100);
 	}
   
