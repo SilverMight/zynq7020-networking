@@ -61,7 +61,9 @@ int main()
 
 	sdcard_init(&fs);
 
-	fil
+	file_open(&fil, "test.bin");
+
+
 
     cleanup_platform();
     return 0;

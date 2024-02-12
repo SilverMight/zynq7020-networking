@@ -2,7 +2,7 @@
 #define SDCARD_H
 
 
-int sdcard_init();
+int sdcard_mount(FATFS *fs);
 
 int sdcard_eject();
 
