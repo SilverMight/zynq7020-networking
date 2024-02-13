@@ -59,10 +59,19 @@ int main()
 	FATFS fs;
 	FIL fil;
 
-	sdcard_init(&fs);
+	xil_printf("Mounting\n");
+	sdcard_mount(&fs);
 
+	xil_printf("Opening\n");
 	file_open(&fil, "test.bin");
 
+	char test[] = "30 on 30\n";
+
+	xil_printf("Writing\n");
+	file_write(&fil, test, sizeof(test));
+
+	xil_printf("Closing\n");
+	file_close(&fil);
 
 
     cleanup_platform();

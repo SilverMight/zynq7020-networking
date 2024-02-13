@@ -7,7 +7,7 @@
 
 int sdcard_mount(FATFS *fs) {
 	FRESULT rc;
-	TCHAR *Path = "";
+	TCHAR *Path = "0:/";
 
 	rc = f_mount(fs, Path, (BYTE) 0);
 
@@ -22,7 +22,7 @@ int sdcard_mount(FATFS *fs) {
 
 int sdcard_eject() {
 	FRESULT rc;
-	TCHAR *Path = "";
+	TCHAR *Path = "0:/";
 
 	rc = f_mount(0, Path, (BYTE) 0);
 
@@ -35,12 +35,22 @@ int sdcard_eject() {
 	return XST_SUCCESS;
 }
 
+// Currently opens in append mode
 int file_open(FIL *fp, TCHAR *path) {
 	FRESULT rc;
-	rc = f_open(fp, path, FA_OPEN_ALWAYS);
+	rc = f_open(fp, path, FA_OPEN_ALWAYS | FA_WRITE);
 
+
+	if(rc) { // create new
+		rc = f_open(fp, path, FA_CREATE_NEW | FA_WRITE);
+		return XST_FAILURE;
+	} else {
+		rc = f_lseek(fp, fp->fsize);
+	}
+
+	// last error check
 	if(rc) {
-		xil_printf("Failed to open file %d\n", rc);
+		xil_printf("file_open failed: %d\n", rc);
 		return XST_FAILURE;
 	}
 
@@ -62,4 +72,9 @@ int file_write(FIL *fp, const void* buff, UINT bytesToWrite) {
 	}
 
 	return XST_SUCCESS;
+}
+
+int file_close(FIL *fp) {
+	f_close(fp);
+	return 0;
 }

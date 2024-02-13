@@ -10,4 +10,6 @@ int file_open(FIL *fp, TCHAR *path);
 
 int file_write(FIL *fp, const void* buff, UINT bytesToWrite);
 
+int file_close(FIL* fp);
+
 #endif
