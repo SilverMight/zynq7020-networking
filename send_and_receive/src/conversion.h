@@ -2,20 +2,20 @@
 #define CONVERSION_H
 #include <stdint.h>
 
-typedef double(*conversionFunction) (double data);
+#define WANDA_NUM_SENSOR_TYPES 8
+#define WANDA_NUM_CHANNELS 2
+#define WANDA_NUM_SENSORS_PER_TYPE 8
 
-double convertToDouble(uint32_t data);
-double convertPressure(double data);
-double convertVoltage(double data);
 
-conversionFunction conversionFunctionsArray[] = {
-    &convertVoltage,
-    &convertPressure
-};
+typedef double(*conversionFunction) (double voltage, uint8_t channelType);
+
+double convertToVoltage(int32_t dout, uint8_t channelNumber);
+
+double convertPressure(double data, uint8_t serialNumber);
+
 
 enum conversionState {
-    voltage,
-    pressure,
+    pressure, // 0
 };
 
 
