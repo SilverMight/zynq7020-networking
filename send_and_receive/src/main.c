@@ -47,6 +47,7 @@
 #include "sleep.h"
 #include "udp.h"
 #include "tcp.h"
+#include "configuration.h"
 
 #if LWIP_DHCP==1
 #include "lwip/dhcp.h"
@@ -186,6 +187,9 @@ int main()
 
 	// start receiving commands
 	start_application();
+
+	// initialize sensor config
+	initialize_sensor_config();
 
 	/* receive and process packets */
 	while (1) {

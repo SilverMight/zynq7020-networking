@@ -16,6 +16,9 @@ double convertPressure(double data, uint8_t serialNumber);
 
 enum conversionState {
     pressure, // 0
+	loadcell, // 1
+
+	max_num_sensors
 };
 
 

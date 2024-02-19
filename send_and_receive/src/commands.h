@@ -7,7 +7,8 @@
 
 #ifndef SRC_COMMANDS_H_
 #define SRC_COMMANDS_H_
+#include <stdint.h>
 
-int processCommand(int command);
+int processCommand(uint32_t command);
 
 #endif /* SRC_COMMANDS_H_ */

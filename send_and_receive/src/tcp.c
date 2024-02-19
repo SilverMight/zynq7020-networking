@@ -40,6 +40,7 @@
 #endif
 
 #include "commands.h"
+#include "wanda_errorcodes.h"
 
 err_t recv_callback(void *arg, struct tcp_pcb *tpcb,
                                struct pbuf *p, err_t err)
@@ -61,11 +62,11 @@ err_t recv_callback(void *arg, struct tcp_pcb *tpcb,
 	/* reinterpret as an integer
 	 * REQUIRES LITTLE ENDIAN, or htonl()
 	 */
-	int command;
-	memcpy(&command, buffer, sizeof(int));
+	uint32_t command;
+	memcpy(&command, buffer, sizeof(uint32_t));
 
 	//xil_printf("\nReceived (ASCII Representation)%s\n", buffer);
-	xil_printf("\n\nReceived integer: %d\n", command);
+	xil_printf("\n\nReceived integer: %u\n", command);
 
 	int reply = processCommand(command);
 	/* reserialize */
