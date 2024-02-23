@@ -14,12 +14,13 @@ double convertToVoltage(int32_t dout, uint8_t channelNumber);
 double convertPressure(double data, uint8_t serialNumber);
 
 
-enum conversionState {
-    pressure, // 0
-	loadcell, // 1
+typedef enum {
+    pressure_transducer, // 0
+	load_cell, // 1
+	thermocouple, // 2
 
-	max_num_sensors
-};
+	max_sensor_types
+} SensorTypes;
 
 
 #endif

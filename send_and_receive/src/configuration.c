@@ -4,29 +4,25 @@
 #include "xil_printf.h"
 #include "wanda_errorcodes.h"
 
-int wandaNumActiveSensors = 0;
 Sensor wandaSensors[WANDA_NUM_SENSORS];
 
 
 int process_config_command(uint32_t command) {
-	// too many sensors!
-	if(wandaNumActiveSensors == WANDA_NUM_SENSORS) {
-		return 1;
-	}
 	Sensor sensor;
 
 	// Channel number is Bits [0:5]
-	int channelNumber = (command & (0xFFFFFFFF >> 26));
+	int channelNumber = GET_CHANNEL_NUMBER(command);
 
 	// Sensor type is [6:8]
-	sensor.sensorType = ((command >> 6) & (0x7));
+	sensor.sensorType = (SensorTypes) GET_SENSOR_TYPE(command);
+
 
 	// Serial number [9:15]
-	sensor.serialNumber = ((command >> 9) & (0x7F));
+	sensor.serialNumber = GET_SERIAL_NUMBER(command);
 
-	// LOGIC TO CHECK IF CORRECT
-	if(sensor.sensorType >= max_num_sensors) {
-		xil_printf("Invalid sensor type\n");
+	// check if valid sensor
+	if(sensor.sensorType < 0 || sensor.sensorType >= max_sensor_types) {
+		xil_printf("Invalid sensor type %d\n", sensor.sensorType);
 		return 1;
 	}
 
