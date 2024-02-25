@@ -251,6 +251,7 @@ BEGIN LIBRARY
  PARAMETER LIBRARY_NAME = lwip141
  PARAMETER LIBRARY_VER = 2.0
  PARAMETER PROC_INSTANCE = ps7_cortexa9_0
+ PARAMETER lwip_tcp_keepalive = true
  PARAMETER mem_size = 524288
  PARAMETER memp_n_pbuf = 1024
  PARAMETER n_rx_descriptors = 512

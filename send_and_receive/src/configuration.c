@@ -23,13 +23,13 @@ int process_config_command(uint32_t command) {
 	// check if valid sensor
 	if(sensor.sensorType < 0 || sensor.sensorType >= max_sensor_types) {
 		xil_printf("Invalid sensor type %d\n", sensor.sensorType);
-		return 1;
+		return WANDA_ERR_SENSOR_INVALID_TYPE;
 	}
 
 
 	wandaSensors[channelNumber] = sensor;
 
-	return 0;
+	return WANDA_ERR_OK;
 }
 
 void print_all_sensors() {

@@ -8,7 +8,8 @@
 #ifndef SRC_COMMANDS_H_
 #define SRC_COMMANDS_H_
 #include <stdint.h>
+#include "wanda_errorcodes.h"
 
-int processCommand(uint32_t command);
+WandaError processCommand(uint32_t command);
 
 #endif /* SRC_COMMANDS_H_ */

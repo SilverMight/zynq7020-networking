@@ -68,7 +68,7 @@ err_t recv_callback(void *arg, struct tcp_pcb *tpcb,
 	//xil_printf("\nReceived (ASCII Representation)%s\n", buffer);
 	xil_printf("\n\nReceived integer: %u\n", command);
 
-	int reply = processCommand(command);
+	int reply = (int) processCommand(command);
 	/* reserialize */
 
 	char newbuf[sizeof(int)];

@@ -14,7 +14,7 @@
 
 #define NO_SYS_NO_TIMERS 1
 
-#define LWIP_TCP_KEEPALIVE 0
+#define LWIP_TCP_KEEPALIVE 1
 
 #define MEM_ALIGNMENT 64
 #define MEM_SIZE 524288
