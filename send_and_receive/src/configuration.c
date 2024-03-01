@@ -20,6 +20,8 @@ int process_config_command(uint32_t command) {
 	// Serial number [9:15]
 	sensor.serialNumber = GET_SERIAL_NUMBER(command);
 
+	xil_printf("Sensor received:\n");
+	xil_printf("Channel: %d, Type: %d, Serial %d\n", channelNumber, sensor.sensorType, sensor.serialNumber);
 	// check if valid sensor
 	if(sensor.sensorType < 0 || sensor.sensorType >= max_sensor_types) {
 		xil_printf("Invalid sensor type %d\n", sensor.sensorType);
@@ -35,7 +37,7 @@ int process_config_command(uint32_t command) {
 void print_all_sensors() {
 	for(int i = 0; i < WANDA_NUM_SENSORS; i++) {
 		Sensor sensor = wandaSensors[i];
-		if(sensor.serialNumber != WANDA_UNINITIALIZED_VALUE && sensor.sensorType != WANDA_UNINITIALIZED_VALUE) {
+		if(sensor.serialNumber != WANDA_UNINITIALIZED_VALUE || sensor.sensorType != WANDA_UNINITIALIZED_VALUE) {
 			xil_printf("Sensor %u: sensor type %u, serial no %u\n", i, sensor.sensorType, sensor.serialNumber);
 		}
 	}

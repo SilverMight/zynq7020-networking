@@ -186,6 +186,7 @@ int main()
 	IP4_ADDR(&dest_ip, 192, 168, 1, 75);
 
 	// start receiving commands
+	xil_printf("Kid named finger\n");
 	start_application();
 
 	// initialize sensor config
@@ -194,7 +195,7 @@ int main()
 	/* receive and process packets */
 	while (1) {
 		xemacif_input(echo_netif);
-		static_send(pcb, &dest_ip, 39000);
+		//static_send(pcb, &dest_ip, 39000);
 		usleep(100);
 	}
   
