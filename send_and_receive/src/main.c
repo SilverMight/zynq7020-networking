@@ -176,8 +176,8 @@ int main()
 	print_ip_settings(&ipaddr, &netmask, &gw);
 
 	/* start the application (web server, rxtest, txtest, etc..) */
-    struct udp_pcb *pcb;
-	if(udp_send_init(&pcb) != 0) {
+    struct udp_pcb *upcb;
+	if(udp_send_init(&upcb) != 0) {
         return -1;
     }
 
@@ -185,9 +185,11 @@ int main()
 	ip_addr_t dest_ip;
 	IP4_ADDR(&dest_ip, 192, 168, 1, 75);
 
-	// start receiving commands
-	xil_printf("Kid named finger\n");
-	start_application();
+	// Get TCP PCB and start application
+	struct tcp_pcb * tpcb = new_tcp_pcb();
+	if(tpcb == NULL) return EXIT_FAILURE;
+
+	start_application(tpcb);
 
 	// initialize sensor config
 	initialize_sensor_config();
@@ -200,7 +202,7 @@ int main()
 	}
   
 	/* never reached */
-    udp_remove(pcb);
+    udp_remove(upcb);
 	cleanup_platform();
 
 	return 0;

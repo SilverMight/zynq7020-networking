@@ -11,7 +11,10 @@
 err_t recv_callback(void *arg, struct tcp_pcb *tpcb,
                                struct pbuf *p, err_t err);
 err_t accept_callback(void *arg, struct tcp_pcb *newpcb, err_t err);
-int start_application();
+int start_application(struct tcp_pcb* pcb);
+
+struct tcp_pcb* new_tcp_pcb();
+
 
 
 #endif /* SRC_TCP_H_ */
