@@ -98,19 +98,15 @@ err_t accept_callback(void *arg, struct tcp_pcb *newpcb, err_t err)
 	return ERR_OK;
 }
 
-struct tcp_pcb* new_tcp_pcb() {
+int new_tcp_pcb(struct tcp_pcb** pcb ) {
 	/* create new TCP PCB structure */
-	struct tcp_pcb* pcb = tcp_new();
+	*pcb = tcp_new();
 	if (!pcb) {
 		xil_printf("Error creating PCB. Out of Memory\n\r");
-		return NULL;
+		return -1;
 	}
 
-	// Enable keepalive
-	pcb->so_options |= SOF_KEEPALIVE;
-	pcb->keep_intvl = 5000;
-
-	return pcb;
+	return 0;
 }
 
 int start_application(struct tcp_pcb* pcb)

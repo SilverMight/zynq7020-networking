@@ -186,8 +186,10 @@ int main()
 	IP4_ADDR(&dest_ip, 192, 168, 1, 75);
 
 	// Get TCP PCB and start application
-	struct tcp_pcb * tpcb = new_tcp_pcb();
-	if(tpcb == NULL) return EXIT_FAILURE;
+	struct tcp_pcb *tpcb;
+	if(new_tcp_pcb(&tpcb) != 0) {
+		return -1;
+	}
 
 	start_application(tpcb);
 
@@ -198,7 +200,7 @@ int main()
 	while (1) {
 		xemacif_input(echo_netif);
 		//static_send(pcb, &dest_ip, 39000);
-		usleep(100);
+		//usleep(100);
 	}
   
 	/* never reached */
