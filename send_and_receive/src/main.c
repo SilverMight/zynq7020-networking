@@ -44,6 +44,7 @@
 
 #include "lwip/tcp.h"
 #include "xil_cache.h"
+#include "xil_mmu.h"
 #include "sleep.h"
 #include "udp.h"
 #include "tcp.h"
@@ -96,6 +97,8 @@ int IicPhyReset(void);
 #endif
 #endif
 
+#define COMM_VAL  (*(volatile unsigned long *)(0xFFFF0000))
+
 int main()
 {
 	struct ip_addr ipaddr, netmask, gw;
@@ -129,6 +132,16 @@ int main()
 	IP4_ADDR(&netmask, 255, 255, 255,  0);
 	IP4_ADDR(&gw,      192, 168,   1,  254);
 #endif	
+	Xil_SetTlbAttributes(0xFFFF0000,0x14de2); // S=b1 TEX=b100 AP=b11, Domain=b1111, C=b0, B=b0 //Disable cache on OCM
+	Xil_Out32(0xfffffff0, 0x1FF00000);            //Write start location of core 1 app
+	dmb();                                                       //Wait till writing is finished
+	xil_printf("Wrote\n");
+	__asm__ ("sev");
+
+
+	xil_printf("Core 0: Setting comm val to 42069 in 1 second\n");
+	sleep(1);
+	COMM_VAL = 42069;
 
 	lwip_init();
 
@@ -198,9 +211,9 @@ int main()
 	while (1) {
 		xemacif_input(echo_netif);
 		//static_send(pcb, &dest_ip, 39000);
-		usleep(100);
 	}
-  
+
+
 	/* never reached */
     udp_remove(upcb);
 	cleanup_platform();
