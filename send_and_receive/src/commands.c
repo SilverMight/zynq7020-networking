@@ -14,6 +14,9 @@ WandaError processCommand(uint32_t command) {
 		xil_printf("Process config command\n", command);
 		return process_config_command(command);
 		break;
+
+
+	// DEBUG COMMANDS - No side effects, prints to stdout.
 	// Print sensors
 	case 0x55:
 		xil_printf("Print all sensors\n", command);
@@ -24,6 +27,7 @@ WandaError processCommand(uint32_t command) {
 	case 0xBC:
 		xil_printf("Print buttons\n");
 		return process_buttons(command);
+
 	// INVALID
 	default:
 		return WANDA_ERR_INVALID_COMMAND;
