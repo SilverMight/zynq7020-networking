@@ -158,10 +158,6 @@ int Can_SendFrame(uint32_t data)
 	 * on receive.
 	 */
 	//FramePtr = (u8 *)(&TxFrame[2]);
-	for (Index = 0; Index < 4; Index++) {
-		xil_printf("%X\r\n", TxFrame[Index]);
-		//*FramePtr++ = (u8)Index;
-	}
 
 	/*
 	 * Wait until TX FIFO has room.
@@ -211,41 +207,7 @@ int Can_RecvFrame()
 	/*
 	 * Receive a frame and verify its contents.
 	 */
-	Status = XCanPs_Recv(InstancePtr, RxFrame);
-	if (Status == XST_SUCCESS) {
-		/*
-		 * Verify Identifier and Data Length Code.
-		 */
-
-		/*
-		if (RxFrame[0] != (u32)ermy)
-			return XST_LOOPBACK_ERROR;
-		*/
-
-		/*
-
-		if ((RxFrame[1] & ~XCANPS_DLCR_TIMESTAMP_MASK) != TxFrame[1])
-			return XST_LOOPBACK_ERROR;
-		*/
-		/*
-		 * Verify Data field contents.
-		 */
-
-		//FramePtr = (u8 *)(&RxFrame[2]);
 
 
-		for(Index = 0; Index < XCANPS_MAX_FRAME_SIZE_IN_WORDS; Index++) {
-			xil_printf("%X\r\n", RxFrame[Index]);
-		}
-
-		FramePtr = (u8 *)(&RxFrame[2]);
-		for (Index = 0; Index < 8; Index++) {
-			xil_printf("Index %d: %d\n", Index, *FramePtr);
-			FramePtr++;
-		}
-
-
-	}
-
-	return Status;
+	return XCanPs_Recv(InstancePtr, RxFrame);
 }

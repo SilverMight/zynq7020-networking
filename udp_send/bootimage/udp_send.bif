@@ -1,7 +1,0 @@
-//arch = zynq; split = false; format = BIN
-the_ROM_image:
-{
-	[bootloader]/home/silvermight/zturn_real/zturn_real.sdk/zynq_fsbl/Debug/zynq_fsbl.elf
-	/home/silvermight/zturn_real/zturn_real.sdk/design_1_wrapper_hw_platform_0/design_1_wrapper.bit
-	/home/silvermight/zturn_git/udp_send/Debug/udp_send.elf
-}

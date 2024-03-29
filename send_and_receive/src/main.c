@@ -73,15 +73,13 @@ int main()
 	xil_printf("CAN Config\n");
 	if(CanPsConfig() != XST_SUCCESS) {
 		xil_printf("CAN Config failed!\n");
-		usleep(1000);
 		return -1;
 	}
 	xil_printf("Finished Config\n");
 	// remove
 	while(1) {
 		xil_printf("Asking for data\n");
-		pcb_request_can_data(0xDA000000);
-		usleep(10000);
+		pcb_stream_can_data();
 	}
 
 	struct ip_addr ipaddr, netmask, gw;
@@ -162,13 +160,11 @@ int main()
 	print_ip_settings(&ipaddr, &netmask, &gw);
 
 	/* start the application (web server, rxtest, txtest, etc..) */
-    struct udp_pcb *upcb;
 	if(udp_send_init(&upcb) != 0) {
         return -1;
     }
 
 
-	ip_addr_t dest_ip;
 	IP4_ADDR(&dest_ip, 192, 168, 1, 75);
 
 	// Get TCP PCB and start application
@@ -196,7 +192,7 @@ int main()
 		xemacif_input(echo_netif);
 		pcb_stream_can_data();
 
-		//static_send(pcb, &dest_ip, 39000);
+		send_data(&RxFrame[2], sizeof(RxFrame[2]));
 		//usleep(100);
 	}
   

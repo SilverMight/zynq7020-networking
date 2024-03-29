@@ -44,6 +44,9 @@
 #include "xil_printf.h"
 #endif
 
+ip_addr_t dest_ip;
+struct udp_pcb *upcb;
+
 void udp_echo_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, struct
 					ip_addr *addr, u16_t port)
 {
@@ -64,54 +67,28 @@ int udp_send_init(struct udp_pcb** pcb_out) {
     return 0;
 }
 
-int static_send(struct udp_pcb * pcb, ip_addr_t * dest_ip, unsigned port) {
-	int numDataPoints = 5;
-
+int send_data(void * data, int data_size) {
 	err_t err;
-	struct pbuf *data; // packet we send over the network
-	char buf[1 + (numDataPoints * sizeof(int))]; // an array of bytes
+	struct pbuf *data_packet; // packet we send over the network
 
+	data_packet = pbuf_alloc(PBUF_TRANSPORT, data_size, PBUF_RAM);
 
-    // Should extrapolate this into a data to string function
-    // (which we could call with data we fetched)
-	int * fakedata = get_n_random_numbers(numDataPoints, 10);
-
-	/*
-	snprintf(buf, 100, "%d,%d,%d,%d,%d\n", fakedata[0], fakedata[1], fakedata[2], fakedata[3], fakedata[4]); // who needs a CSV library anyway
-	int buflen = strlen(buf);
-	*/
-
-	buf[0] = 0xAA; // sync word for telemetry viewer
-	size_t offset = 1;
-	for(int i = 0; i < numDataPoints; i++) {
-		memcpy(buf + offset, &fakedata[i], sizeof(int));
-		offset += sizeof(int);
-	}
-
-	//xil_printf("%d,%d,%d,%d,%d\n", fakedata[0], fakedata[1], fakedata[2], fakedata[3], fakedata[4]); // who needs a CSV library anyway
-	//xil_printf("%c, %d,%d,%d,%d,%d\n", *(buf), *(buf + 1), *(buf + 5), *(buf + 9), *(buf + 13), *(buf + 17) );
-
-	int buflen = sizeof(buf);
-
-	data = pbuf_alloc(PBUF_TRANSPORT, buflen, PBUF_RAM);
-
-	if(data == NULL) {
+	if(data_packet == NULL) {
 		xil_printf("Failed to allocate, OOM");
 		return -1;
 	}
 
-	if(pbuf_take(data, buf, buflen) != ERR_OK) {
+	if(pbuf_take(data_packet, data, data_size) != ERR_OK) {
 		xil_printf("Error in pbuf_take\n");
 		return -1;
 	}
 
-	err = udp_sendto(pcb, data, dest_ip, port);
+	err = udp_sendto(upcb, data_packet, &dest_ip, WANDA_UDP_PORT);
 	if (err != ERR_OK) {
 		xil_printf("Failed to send!\n");
         return -1;
 	}
 
-	free(fakedata);
-	pbuf_free(data);
+	pbuf_free(data_packet);
 	return 0;
 }

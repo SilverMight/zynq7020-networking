@@ -4,6 +4,7 @@
 #include "pcb2.h"
 #include "can.h"
 #include "wanda_errorcodes.h"
+#include "udp.h"
 
 #define WANDA_NUM_CAN_DATA_POINTS 22
 
@@ -20,6 +21,8 @@ WandaError pcb_request_can_data(uint32_t command) {
 
 }
 
+//static int hit[22];
+
 WandaError pcb_stream_can_data() {
 
 	int status = Can_RecvFrame();
@@ -35,8 +38,14 @@ WandaError pcb_stream_can_data() {
 	}
 
 
-	for(int i = 0; i < XCANPS_MAX_FRAME_SIZE_IN_WORDS; i++) {
-		xil_printf("Frame %d: %x\n", i, RxFrame[i]);
+	u8 * FramePointer = (u8 *) (&RxFrame[2]);
+
+	// Merge into an actual 64-bit integer to send
+	uint64_t data;
+	for(int i = 0; i < 5; i++) {
+		data |= ((uint64_t) FramePointer[i]) << (i * 8);
 	}
+
+	send_data(&data, sizeof(data));
 	return WANDA_ERR_OK;
 }
