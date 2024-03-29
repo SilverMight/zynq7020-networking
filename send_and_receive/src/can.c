@@ -2,19 +2,18 @@
 #include "xparameters.h"
 #include "xil_printf.h"
 
+// Wanda CAN
+#include "can.h"
+
 /************************** Constant Definitions *****************************/
 
-/*
- * The following constants map to the XPAR parameters created in the
- * xparameters.h file. They are defined here such that a user can easily
- * change all the needed parameters in one place.
- */
 #define CAN_DEVICE_ID	0x1DA
 
 /*
  * Maximum CAN frame length in words.
  */
-#define XCANPS_MAX_FRAME_SIZE_IN_WORDS (sizeof(u32)*4 / sizeof(u32))
+// ##define XCANPS_MAX_FRAME_SIZE_IN_WORDS (XCANPS_MAX_FRAME_SIZE / sizeof(u32))
+#define XCANPS_MAX_FRAME_SIZE_IN_WORDS 16
 
 #define FRAME_DATA_LENGTH 		4  /* Frame Data field length */
 
@@ -56,9 +55,6 @@
 
 /************************** Function Prototypes ******************************/
 
-int CanPsConfig();
-int SendFrame();
-int RecvFrame();
 
 /************************** Variable Definitions *****************************/
 
@@ -68,7 +64,8 @@ int RecvFrame();
  * These buffers need to be 32-bit aligned
  */
 static u32 TxFrame[XCANPS_MAX_FRAME_SIZE_IN_WORDS];
-static u32 RxFrame[XCANPS_MAX_FRAME_SIZE_IN_WORDS];
+// This will be externally access
+u32 RxFrame[XCANPS_MAX_FRAME_SIZE_IN_WORDS];
 
 /* Driver instance */
 static XCanPs Can;
@@ -77,6 +74,7 @@ static XCanPs* InstancePtr = &Can;
 
 int CanPsConfig()
 {
+	xil_printf("Entering CANPSCONFIG\n");
 	int Status;
 	XCanPs *CanInstPtr = &Can;
 	XCanPs_Config *ConfigPtr;
@@ -117,10 +115,9 @@ int CanPsConfig()
 	XCanPs_EnterMode(CanInstPtr, XCANPS_MODE_NORMAL);
 
 	while(XCanPs_GetMode(CanInstPtr) != XCANPS_MODE_NORMAL);
-	/*
-	 * Send a frame, receive the frame via the loop back and verify its
-	 * contents.
-	 */
+
+
+	return XST_SUCCESS;
 }
 
 
@@ -140,7 +137,7 @@ int CanPsConfig()
 * correctly.
 *
 ******************************************************************************/
-int SendFrame(uint32_t data)
+int Can_SendFrame(uint32_t data)
 {
 	u8 *FramePtr;
 	int Index;
@@ -155,7 +152,6 @@ int SendFrame(uint32_t data)
 	TxFrame[0] = (u32)XCanPs_CreateIdValue((u32)TEST_MESSAGE_ID, 0, 0, 0, 0);
 	TxFrame[1] = (u32)XCanPs_CreateDlcValue((u32)FRAME_DATA_LENGTH);
 	TxFrame[2] = (u32)data;
-	//TxFrame[3] = (u16)erm_pl;
 
 	/*
 	 * Now fill in the data field with known values so we can verify them
@@ -201,7 +197,7 @@ int SendFrame(uint32_t data)
 * correctly.
 *
 ******************************************************************************/
-int RecvFrame()
+int Can_RecvFrame()
 {
 	u8 *FramePtr;
 	int Status;
@@ -231,7 +227,6 @@ int RecvFrame()
 		if ((RxFrame[1] & ~XCANPS_DLCR_TIMESTAMP_MASK) != TxFrame[1])
 			return XST_LOOPBACK_ERROR;
 		*/
-
 		/*
 		 * Verify Data field contents.
 		 */
@@ -239,17 +234,16 @@ int RecvFrame()
 		//FramePtr = (u8 *)(&RxFrame[2]);
 
 
-
-		for (Index = 0; Index < 4; Index++) {
-
+		for(Index = 0; Index < XCANPS_MAX_FRAME_SIZE_IN_WORDS; Index++) {
 			xil_printf("%X\r\n", RxFrame[Index]);
-
-			/*
-			if (*FramePtr++ != (u8)Index) {
-				return XST_LOOPBACK_ERROR;
-			}
-			*/
 		}
+
+		FramePtr = (u8 *)(&RxFrame[2]);
+		for (Index = 0; Index < 8; Index++) {
+			xil_printf("Index %d: %d\n", Index, *FramePtr);
+			FramePtr++;
+		}
+
 
 	}
 

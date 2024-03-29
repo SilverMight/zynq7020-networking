@@ -1,6 +1,8 @@
 #include "commands.h"
 #include "configuration.h"
 #include "buttons.h"
+#include "pcb2.h"
+#include "can.h"
 
 #include <stdio.h>
 #include "xil_printf.h"
@@ -14,6 +16,19 @@ WandaError processCommand(uint32_t command) {
 		xil_printf("Process config command\n", command);
 		return process_config_command(command);
 		break;
+
+	// PCB2 Commands
+
+	// Servo angle
+	case 0xAA:
+	// Servo power
+	case 0xB0:
+	// Power on/off solenoid
+	case 0xEB:
+	// Request CAN data
+	case 0xDA:
+		Can_SendFrame(command);
+
 
 
 	// DEBUG COMMANDS - No side effects, prints to stdout.
