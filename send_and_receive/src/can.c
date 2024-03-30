@@ -74,7 +74,7 @@ static XCanPs* InstancePtr = &Can;
 
 int CanPsConfig()
 {
-	xil_printf("Entering CANPSCONFIG\n");
+	xil_printf("Entering CANPSCONFIG...\n");
 	int Status;
 	XCanPs *CanInstPtr = &Can;
 	XCanPs_Config *ConfigPtr;
@@ -116,6 +116,7 @@ int CanPsConfig()
 
 	while(XCanPs_GetMode(CanInstPtr) != XCANPS_MODE_NORMAL);
 
+	xil_printf("Exiting CANPSCONFIG...\n");
 
 	return XST_SUCCESS;
 }

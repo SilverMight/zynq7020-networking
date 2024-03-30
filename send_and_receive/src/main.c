@@ -189,22 +189,22 @@ int main()
 	}
 
 	// Configure GPIO
+	xil_printf("GPIO Enter\n");
 	if(GpioInit() != XST_SUCCESS) {
 		xil_printf("GPIO Config failed!\nTerminating\n");
 	}
+	xil_printf("GPIO Exit\n");
 
 	// Tell PCB to start sending data
 	//Can_SendFrame(0xDA000000);
 
 	/* receive and process packets */
 	xil_printf("Hello\n");
-	uint64_t boner = 0xFFFFFFFFFFFFFFFFUL;
 	while (1) {
 		xemacif_input(echo_netif);
 		pcb_stream_can_data();
 
 		//send_data(&RxFrame[2], sizeof(RxFrame[2]));
-		//send_data(&boner, sizeof(boner));
 		//usleep(100);
 	}
   

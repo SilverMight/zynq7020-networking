@@ -42,8 +42,7 @@ WandaError pcb_stream_can_data() {
 	// Merge into an actual 64-bit integer to send
 	uint64_t data = 0;
 	for(uint8_t i = 0; i < WANDA_PCB2_BYTES; i++) {
-		xil_printf("Index %d: %x\n",i, FramePointer[i]);
-		data |= ((uint64_t) (FramePointer[i])) << ((WANDA_PCB2_BYTES - i) * 8);
+		data |= ((uint64_t) (FramePointer[i])) << ((WANDA_PCB2_BYTES - 1 - i) * 8);
 	}
 
 	send_data(&data, sizeof(data));
