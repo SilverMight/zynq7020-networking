@@ -8,7 +8,7 @@
 
 #define WANDA_NUM_CAN_DATA_POINTS 22
 
-WandaError pcb_request_can_data(uint32_t command) {
+void pcb_request_can_data(uint32_t command) {
 	Can_SendFrame(command);
 
 	// Read data
@@ -17,7 +17,6 @@ WandaError pcb_request_can_data(uint32_t command) {
 		xil_printf("Reading data point %d\n", i);
 		Can_RecvFrame();
 	}
-
 
 }
 
@@ -28,7 +27,7 @@ WandaError pcb_stream_can_data() {
 	int status = Can_RecvFrame();
 
 	if(status == XST_NO_DATA) {
-		xil_printf("CAN DATA Stream: No data ready\n");
+		//xil_printf("CAN DATA Stream: No data ready\n");
 		return WANDA_ERR_OK;
 	}
 
@@ -41,9 +40,10 @@ WandaError pcb_stream_can_data() {
 	u8 * FramePointer = (u8 *) (&RxFrame[2]);
 
 	// Merge into an actual 64-bit integer to send
-	uint64_t data;
-	for(int i = 0; i < 5; i++) {
-		data |= ((uint64_t) FramePointer[i]) << (i * 8);
+	uint64_t data = 0;
+	for(uint8_t i = 0; i < WANDA_PCB2_BYTES; i++) {
+		xil_printf("Index %d: %x\n",i, FramePointer[i]);
+		data |= ((uint64_t) (FramePointer[i])) << ((WANDA_PCB2_BYTES - i) * 8);
 	}
 
 	send_data(&data, sizeof(data));

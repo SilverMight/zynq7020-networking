@@ -17,6 +17,7 @@
 #include "udp.h"
 #include "tcp.h"
 #include "can.h"
+#include "gpio.h"
 #include "pcb2.h"
 #include "configuration.h"
 
@@ -67,8 +68,10 @@ int IicPhyReset(void);
 #endif
 #endif
 
+#include "buttons.h"
 int main()
 {
+	/*
 	// Configure CAN
 	xil_printf("CAN Config\n");
 	if(CanPsConfig() != XST_SUCCESS) {
@@ -81,6 +84,7 @@ int main()
 		xil_printf("Asking for data\n");
 		pcb_stream_can_data();
 	}
+	*/
 
 	struct ip_addr ipaddr, netmask, gw;
 
@@ -111,7 +115,7 @@ int main()
 	/* initliaze IP addresses to be used */
 	IP4_ADDR(&ipaddr,  192, 168,   1, 10);
 	IP4_ADDR(&netmask, 255, 255, 255,  0);
-	IP4_ADDR(&gw,      192, 168,   1,  254);
+	IP4_ADDR(&gw,      192, 168,   1,  1);
 #endif	
 
 	lwip_init();
@@ -165,7 +169,7 @@ int main()
     }
 
 
-	IP4_ADDR(&dest_ip, 192, 168, 1, 75);
+	IP4_ADDR(&dest_ip, 192, 168, 1, 3);
 
 	// Get TCP PCB and start application
 	struct tcp_pcb *tpcb;
@@ -184,15 +188,23 @@ int main()
 		return -1;
 	}
 
+	// Configure GPIO
+	if(GpioInit() != XST_SUCCESS) {
+		xil_printf("GPIO Config failed!\nTerminating\n");
+	}
+
 	// Tell PCB to start sending data
-	Can_SendFrame(0xDA000000);
+	//Can_SendFrame(0xDA000000);
 
 	/* receive and process packets */
+	xil_printf("Hello\n");
+	uint64_t boner = 0xFFFFFFFFFFFFFFFFUL;
 	while (1) {
 		xemacif_input(echo_netif);
 		pcb_stream_can_data();
 
-		send_data(&RxFrame[2], sizeof(RxFrame[2]));
+		//send_data(&RxFrame[2], sizeof(RxFrame[2]));
+		//send_data(&boner, sizeof(boner));
 		//usleep(100);
 	}
   

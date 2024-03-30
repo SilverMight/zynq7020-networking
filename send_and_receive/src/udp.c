@@ -74,7 +74,7 @@ int send_data(void * data, int data_size) {
 	data_packet = pbuf_alloc(PBUF_TRANSPORT, data_size, PBUF_RAM);
 
 	if(data_packet == NULL) {
-		xil_printf("Failed to allocate, OOM");
+		xil_printf("Failed to allocate, OOM\n");
 		return -1;
 	}
 

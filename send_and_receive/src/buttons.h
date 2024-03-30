@@ -13,7 +13,7 @@
 #define WANDA_NUM_BUTTONS 15
 #define EXTRACT_BUTTON_STATE(command) (command & (0x7FFF))
 
-WandaError process_buttons(uint32_t command);
+void process_buttons(uint32_t command);
 
 extern uint32_t buttonState;
 

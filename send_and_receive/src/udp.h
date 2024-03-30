@@ -2,7 +2,7 @@
 #define ECHO_H
 #include "lwip/udp.h"
 
-#define WANDA_UDP_PORT 8888
+#define WANDA_UDP_PORT 6969
 extern ip_addr_t dest_ip;
 extern struct udp_pcb *upcb;
 

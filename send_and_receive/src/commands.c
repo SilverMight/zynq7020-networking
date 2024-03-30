@@ -41,7 +41,8 @@ WandaError processCommand(uint32_t command) {
 	// Button command
 	case 0xBC:
 		xil_printf("Print buttons\n");
-		return process_buttons(command);
+		process_buttons(command);
+		return WANDA_ERR_OK;
 
 	// INVALID
 	default:

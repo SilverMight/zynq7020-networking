@@ -3,7 +3,7 @@
 	<name>send_and_receive</name>
 	<comment></comment>
 	<projects>
-		<project>udp_send_bsp</project>
+		<project>wanda_gpio_bsp</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

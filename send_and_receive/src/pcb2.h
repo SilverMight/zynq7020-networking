@@ -3,7 +3,9 @@
 #include <stdint.h>
 #include "wanda_errorcodes.h"
 
-WandaError pcb_request_can_data(uint32_t command);
+#define WANDA_PCB2_BYTES 5UL
+
+void pcb_request_can_data(uint32_t command);
 WandaError pcb_stream_can_data();
 
 #endif

@@ -202,7 +202,7 @@ int Can_RecvFrame()
 	/*
 	 * Wait until a frame is received.
 	 */
-	while (XCanPs_IsRxEmpty(InstancePtr) == TRUE);
+	if (XCanPs_IsRxEmpty(InstancePtr)) return XST_NO_DATA;
 
 	/*
 	 * Receive a frame and verify its contents.

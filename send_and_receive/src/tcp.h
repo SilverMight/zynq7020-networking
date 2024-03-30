@@ -8,6 +8,7 @@
 #ifndef SRC_TCP_H_
 #define SRC_TCP_H_
 
+#define WANDA_TCP_PORT 8888
 err_t recv_callback(void *arg, struct tcp_pcb *tpcb,
                                struct pbuf *p, err_t err);
 err_t accept_callback(void *arg, struct tcp_pcb *newpcb, err_t err);

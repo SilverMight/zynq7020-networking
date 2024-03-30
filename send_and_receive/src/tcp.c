@@ -41,6 +41,7 @@
 
 #include "commands.h"
 #include "wanda_errorcodes.h"
+#include "tcp.h"
 
 err_t recv_callback(void *arg, struct tcp_pcb *tpcb,
                                struct pbuf *p, err_t err)
@@ -112,13 +113,12 @@ int new_tcp_pcb(struct tcp_pcb** pcb ) {
 int start_application(struct tcp_pcb* pcb)
 {
 	err_t err;
-	const unsigned port = 35912;
 
 
 	/* bind to specified @port */
-	err = tcp_bind(pcb, IP_ADDR_ANY, port);
+	err = tcp_bind(pcb, IP_ADDR_ANY, WANDA_TCP_PORT);
 	if (err != ERR_OK) {
-		xil_printf("Unable to bind to port %d: err = %d\n\r", port, err);
+		xil_printf("Unable to bind to port %d: err = %d\n\r", WANDA_TCP_PORT, err);
 		return -2;
 	}
 
@@ -135,7 +135,7 @@ int start_application(struct tcp_pcb* pcb)
 	/* specify callback to use for incoming connections */
 	tcp_accept(pcb, accept_callback);
 
-	xil_printf("TCP echo server started @ port %d\n\r", port);
+	xil_printf("TCP echo server started @ port %d\n\r", WANDA_TCP_PORT);
 
 	return 0;
 }
