@@ -1,2 +1,2 @@
    text	   data	    bss	    dec	    hex	filename
-  96636	   3836	31545600	31646072	1e2e178	send_and_receive.elf
+ 105472	   3860	31545600	31654932	1e30414	send_and_receive.elf

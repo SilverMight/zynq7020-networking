@@ -28,6 +28,7 @@ WandaError processCommand(uint32_t command) {
 	// Request CAN data
 	case 0xDA:
 		Can_SendFrame(command);
+		break;
 
 
 
