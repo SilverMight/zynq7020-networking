@@ -12,8 +12,8 @@ void process_buttons(uint32_t command) {
 	int updatedButtons = buttonState ^ newState;
 	*/
 
-	// Send 8 bits to GPIO
-	GpioSet(0x000000FF & command);
+	// Send 16 bits to GPIO
+	GpioSet(0x0000FFFF & command);
 
 	// TODO: logic to make sure button state is OK
 	//buttonState = updatedButtons;

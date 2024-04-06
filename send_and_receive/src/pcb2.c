@@ -45,6 +45,9 @@ WandaError pcb_stream_can_data() {
 		data |= ((uint64_t) (FramePointer[i])) << ((WANDA_PCB2_BYTES - 1 - i) * 8);
 	}
 
+	// Echo data back
+	status = Can_SendFrame(0xDEADBEEF);
+
 	send_data(&data, sizeof(data));
 	return WANDA_ERR_OK;
 }

@@ -36,8 +36,8 @@
  frequency
  * is 24 MHz.
  */
-#define TEST_BTR_SYNCJUMPWIDTH		3
-#define TEST_BTR_SECOND_TIMESEGMENT	1
+#define TEST_BTR_SYNCJUMPWIDTH		2
+#define TEST_BTR_SECOND_TIMESEGMENT	3
 #define TEST_BTR_FIRST_TIMESEGMENT	2
 
 /*
@@ -47,7 +47,7 @@
  * This value is for a 40 Kbps baudrate assuming the CAN input clock frequency
  * is 24 MHz.
  */
-#define TEST_BRPR_BAUD_PRESCALAR	31
+#define TEST_BRPR_BAUD_PRESCALAR    74
 
 /**************************** Type Definitions *******************************/
 
@@ -178,6 +178,48 @@ int Can_SendFrame(uint32_t data)
 }
 
 
+// 64_bit version
+int Can_SendFrame64(uint64_t data)
+{
+	u8 *FramePtr;
+	int Index;
+	int Status;
+
+	//int erm_pl = 0xBEEF;
+
+
+	/*
+	 * Create correct values for Identifier and Data Length Code Register.
+	 */
+	TxFrame[0] = (u32)XCanPs_CreateIdValue((u32)TEST_MESSAGE_ID, 0, 0, 0, 0);
+	TxFrame[1] = (u32)XCanPs_CreateDlcValue((u32)FRAME_DATA_LENGTH);
+
+	// Cast to pointer to 64-bit int, fill with data
+	//*((uint64_t*) &TxFrame[2]) = (uint64_t)data;
+	memcpy(&TxFrame[2], &data, sizeof(data));
+
+	/*
+	 * Now fill in the data field with known values so we can verify them
+	 * on receive.
+	 */
+	//FramePtr = (u8 *)(&TxFrame[2]);
+
+	/*
+	 * Wait until TX FIFO has room.
+	 */
+	while (XCanPs_IsTxFifoFull(InstancePtr) == TRUE);
+
+	/*
+	 * Now send the frame.
+	 *
+	 * Another way to send a frame is keep calling XCanPs_Send() until it
+	 * returns XST_SUCCESS. No check on if TX FIFO is full is needed anymore
+	 * in that case.
+	 */
+	Status = XCanPs_Send(InstancePtr, TxFrame);
+
+	return Status;
+}
 /*****************************************************************************/
 /**
 *
